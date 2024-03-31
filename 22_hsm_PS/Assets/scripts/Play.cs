@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static queue;
 
 public class Play : MonoBehaviour
 {
     public static Play Instance;
     public GameObject prefab; // 재사용할 프리팹
     public Material[] materials;
-    public LinkedListQueue<GameObject> objectQueue;
+    public StackWithTwoQueues<GameObject> objectStack;
 
     void Start()
     {
@@ -22,7 +21,7 @@ public class Play : MonoBehaviour
             return;
         }
 
-        objectQueue = new LinkedListQueue<GameObject>();
+        objectStack = new StackWithTwoQueues<GameObject>();
 
         // 초기에 10개의 게임 오브젝트를 생성하여 큐에 넣음
         for (int i = 0; i < 10; i++)
@@ -30,7 +29,7 @@ public class Play : MonoBehaviour
             GameObject obj = Instantiate(prefab, transform.position, Quaternion.identity);
             obj.GetComponent<Renderer>().material = materials[i];
             obj.SetActive(false);
-            objectQueue.Enqueue(obj);
+            objectStack.Push(obj);
         }
     }
 
@@ -40,9 +39,9 @@ public class Play : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             // 큐에서 오브젝트를 가져와서 활성화
-            if (!objectQueue.IsEmpty())
+            if (!objectStack.IsEmpty())
             {
-                GameObject obj = objectQueue.Dequeue();
+                GameObject obj = objectStack.Pop();
                 obj.transform.position = new Vector3(-8,1,0);
                 obj.SetActive(true);
             }

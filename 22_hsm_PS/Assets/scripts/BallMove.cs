@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BallMove : MonoBehaviour
 {
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,14 +15,20 @@ public class BallMove : MonoBehaviour
     void Update()
     {
         transform.Translate(new Vector3(0.01f, 0, 0));
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Goal"))
+
+
+        Collider[] colliders = Physics.OverlapBox(transform.position, new Vector3(0.5f, 0.5f, 0.5f));
+
+        foreach (Collider collider in colliders)
         {
-            Debug.Log("col");
-            gameObject.SetActive(false);
-            Play.Instance.objectQueue.Enqueue(gameObject);
+            if (collider.CompareTag("Goal"))
+            {
+                // 충돌한 물체가 플레이어일 때, 현재 오브젝트를 파괴
+                gameObject.SetActive(false);
+                Play.Instance.objectStack.Push(gameObject);
+                break; // 더 이상 검사하지 않음
+            }
         }
     }
+
 }
