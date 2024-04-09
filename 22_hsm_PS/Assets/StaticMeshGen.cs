@@ -26,9 +26,10 @@ public class StaticMeshGenEditor : Editor
 public class StaticMeshGen : MonoBehaviour
 {
     public Shader shader;
+    private Mesh mesh;
     public void GenerateMesh()
     {
-        Mesh mesh = new Mesh();
+        mesh = new Mesh();
 
         Vector3[] vertices = new Vector3[]
         {
@@ -57,6 +58,8 @@ public class StaticMeshGen : MonoBehaviour
             new Vector3 (-3.090f, 2.618f, 4.0f),
             new Vector3 (-0.951f, 2.618f, 4.0f),
         };
+
+        
 
         mesh.vertices = vertices;
 
@@ -112,7 +115,46 @@ public class StaticMeshGen : MonoBehaviour
             
         };
 
+
+
+
+        Vector3[] normals = new Vector3[vertices.Length];
+
         mesh.triangles = triangleIndices;
+
+
+        for (int i = 0; i < mesh.triangles.Length; i += 3)
+        {
+            int index1 = mesh.triangles[i];
+            int index2 = mesh.triangles[i + 1];
+            int index3 = mesh.triangles[i + 2];
+
+            Vector3 v1 = vertices[index1];
+            Vector3 v2 = vertices[index2];
+            Vector3 v3 = vertices[index3];
+
+            // 삼각형을 이루는 세 정점을 이용하여 삼각형의 노말 벡터를 계산합니다.
+            Vector3 normal = Vector3.Cross(v2 - v1, v3 - v1).normalized;
+
+            // 각 정점의 노말 벡터에 삼각형의 노말 벡터를 더합니다.
+            normals[index1] += normal;
+            normals[index2] += normal;
+            normals[index3] += normal;
+        }
+
+        // 각 정점의 노말 벡터를 정규화합니다.
+        for (int i = 0; i < normals.Length; i++)
+        {
+            normals[i] = normals[i].normalized;
+        }
+
+        // 결과를 출력합니다.
+        for (int i = 0; i < normals.Length; i++)
+        {
+            Debug.Log("Vertex: " + vertices[i] + ", Normal: " + normals[i]);
+        }
+
+        mesh.normals = normals;
 
         MeshFilter mf = this.AddComponent<MeshFilter>();
         MeshRenderer mr = this.AddComponent<MeshRenderer>();
@@ -122,11 +164,12 @@ public class StaticMeshGen : MonoBehaviour
 
     private void Start()
     {
-        // Material을 만듭니다.
-        Material material = new Material(shader);
-
         // Material을 MeshRenderer에 할당합니다.
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material = material;
+        
+
+
+        
     }
+
 }

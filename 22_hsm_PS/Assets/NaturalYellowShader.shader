@@ -1,32 +1,59 @@
-Shader "Custom/YellowObjectShader"
+Shader "Unlit/YellowShader"
 {
     Properties
     {
-        _Color ("Main Color", Color) = (1, 1, 0, 1) // 노란색
+        _DiffuseColor("DiffuseColor", Color) = (1,1,0,1)
+        _LightDirection("LightDirection", Vector) = (1,-1,-1,0)
     }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 200
 
-        CGPROGRAM
-        #pragma surface surf Lambert
 
-        struct Input
+        Pass
         {
-            float2 uv_MainTex;
-        };
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+           
+            #include "UnityCG.cginc"
 
-        sampler2D _MainTex;
-        fixed4 _Color;
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
 
-        void surf (Input IN, inout SurfaceOutput o)
-        {
-            // 기본 색상 설정
-            o.Albedo = _Color.rgb;
-            o.Alpha = _Color.a;
+            struct v2f
+            {
+                float4 vertex : SV_POSITION;
+                float3 normal : NORMAL;
+            };
+
+            float4 _DiffuseColor;
+            float4 _LightDirection;
+
+            v2f vert (appdata v)
+            {
+                v2f o;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.normal = v.normal;
+                return o;
+            }
+
+            fixed4 frag (v2f i) : SV_Target
+            {
+                // sample the texture
+                //fixed4 col = float4(1.0f,1.0f,0.0,1.0f);
+                float lightDir = normalize(_LightDirection);
+                float lightIntensity = max(dot(i.normal,lightDir),0);
+
+                float4 col = _DiffuseColor * lightIntensity;
+
+
+                return col;
+            }
+            ENDCG
         }
-        ENDCG
     }
-    FallBack "Diffuse"
 }
