@@ -25,7 +25,7 @@ public class StaticMeshGenEditor : Editor
 //메쉬만들기 예제
 public class StaticMeshGen : MonoBehaviour
 {
-    public Shader shader;
+    public Material material;
     private Mesh mesh;
     public void GenerateMesh()
     {
@@ -160,6 +160,7 @@ public class StaticMeshGen : MonoBehaviour
         MeshRenderer mr = this.AddComponent<MeshRenderer>();
 
         mf.mesh = mesh;
+        mr.material= material;
     }
 
     private void Start()
