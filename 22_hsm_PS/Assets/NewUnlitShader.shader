@@ -49,14 +49,16 @@ Shader "Unlit/YellowShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float ambientStrength = 0.2;
-				float4 ambient = ambientStrength * float4(1.0, 1.0, 1.0,1.0);//¾Úºñ¾ðÆ® ÁÖº¯±¤
+                float ambientStrength = 0.5;
+				float4 ambient = ambientStrength * float4(1.0, 1.0, 0.0,1.0);
 
                 // sample the texture
                 //fixed4 col = float4(1.0f,1.0f,0.0,1.0f);
 
                 float4 lightDir = normalize(_LightDirection);
                 float lightIntensity = max(dot(i.normal,lightDir),0);
+                float4 diffuse=_DiffuseColor * lightIntensity;
+
 
                 float3 viewDir = normalize(i.viewDir);
                 float3 halfwayDir = normalize(lightDir + viewDir);
@@ -65,16 +67,16 @@ Shader "Unlit/YellowShader"
                 float specularIntensity = pow(max(dot(i.normal, halfwayDir), 0.0), _Shininess);
                 float4 specular = _SpecularColor.rgba * specularIntensity;
 
-                float4 diffuse = _DiffuseColor * lightIntensity+specular;
+                
+
+                float4 color = diffuse+specular+ambient;
                 
 
 
 
-                float threshold = 0.3;
+                float threshold = 0.4;
 
-                float4 finalIntensity = lerp(ambient, diffuse, smoothstep(0.0, threshold, lightIntensity));
-
-                float4 banding=floor(finalIntensity/threshold);
+                float4 banding=floor(color/threshold);
                 float4 col=banding*threshold;
 
 
