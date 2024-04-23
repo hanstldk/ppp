@@ -3,9 +3,10 @@ Shader "Unlit/YellowShader"
     Properties
     {
         _DiffuseColor("DiffuseColor", Color) = (1,1,0,1)
-        _LightDirection("LightDirection", Vector) = (-1,1,-1,0)
+        _LightDirection("LightDirection", Vector) = (1,1,1,0)
         _SpecularColor("SpecularColor", Color) = (1,1,1,1)
         _Shininess("Shininess", Range(0.1, 100)) = 10
+        _Ambient("AmbientColor", Color)=(1,1,1,1)
     }
     SubShader
     {
@@ -37,6 +38,7 @@ Shader "Unlit/YellowShader"
             float4 _LightDirection;
             float4 _SpecularColor;
             float _Shininess;
+            float4 _Ambient;
 
             v2f vert (appdata v)
             {
@@ -49,8 +51,7 @@ Shader "Unlit/YellowShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float ambientStrength = 0.5;
-				float4 ambient = ambientStrength * float4(1.0, 1.0, 0.0,1.0);
+				float4 ambient = _Ambient * 0.4f;
 
                 // sample the texture
                 //fixed4 col = float4(1.0f,1.0f,0.0,1.0f);
@@ -74,7 +75,7 @@ Shader "Unlit/YellowShader"
 
 
 
-                float threshold = 0.4;
+                float threshold = 0.1;
 
                 float4 banding=floor(color/threshold);
                 float4 col=banding*threshold;
